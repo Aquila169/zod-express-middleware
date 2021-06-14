@@ -10,7 +10,8 @@
     "url": "https://github.com/Aquila169/zod-express-middleware"
   },
   "scripts": {
-    "test": "test",
+    "test": "jest",
+    "lint": "eslint . --ext .ts,.tsx",
     "build": "tsc",
     "prepare": "npm run build"
   },
@@ -24,8 +25,20 @@
   "license": "MIT",
   "devDependencies": {
     "@types/express": "^4.17.12",
+    "@types/jest": "^26.0.23",
     "express": "^4.17.1",
+    "jest": "^27.0.4",
+    "prettier": "^2.3.1",
+    "ts-jest": "^27.0.3",
     "typescript": "^4.3.2",
+    "zod": "^3.2.0",
+    "@typescript-eslint/eslint-plugin": "^4.26.1",
+    "@typescript-eslint/parser": "^4.26.1",
+    "eslint": "^7.28.0"
+  },
+  "peerDependencies": {
+    "@types/express": "^4.17.12",
+    "express": "^4.17.1",
     "zod": "^3.2.0"
   },
   "files": [
