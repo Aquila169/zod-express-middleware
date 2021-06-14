@@ -4,6 +4,11 @@
   "description": "Express middleware to validate requests using zod schema's.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
+  "homepage": "https://github.com/Aquila169/zod-express-middleware",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Aquila169/zod-express-middleware"
+  },
   "scripts": {
     "test": "test",
     "build": "tsc",
@@ -16,7 +21,7 @@
     "endpoint"
   ],
   "author": "Casper Schouls",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@types/express": "^4.17.12",
     "express": "^4.17.1",
