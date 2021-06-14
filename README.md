@@ -72,9 +72,9 @@ app.listen(PORT, () => {
 This functions accepts an object containing three optional properties:
 ```typescript
 schemas: {
-  `params? : ZodSchema`
-  `query? : ZodSchema`
-  `body? : ZodSchema`
+  params? : ZodSchema
+  query? : ZodSchema
+  body? : ZodSchema
 }
 ```
  
