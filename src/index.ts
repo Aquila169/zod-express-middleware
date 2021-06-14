@@ -5,7 +5,9 @@ import { ZodError, ZodSchema } from 'zod';
 type ErrorList = { type: 'Query' | 'Params' | 'Body'; errors: ZodError<any> };
 
 function sendErrors(res: any, errors: Array<ErrorList>) {
-  return res.status(400).send(errors.map((error) => error.errors.flatten().fieldErrors));
+  return res
+    .status(400)
+    .send(errors.map((error) => ({ type: error.type, errors: error.errors.flatten().fieldErrors })));
 }
 
 export const validateRequestBody: <TBody>(
