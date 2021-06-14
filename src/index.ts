@@ -5,12 +5,12 @@ import { ZodError, ZodSchema } from 'zod';
 type ErrorList = { type: 'Query' | 'Params' | 'Body'; errors: ZodError<any> };
 
 function sendErrors(res: any, errors: Array<ErrorList>) {
-  return res.status(400).send(errors.map(error => error.errors.flatten().fieldErrors));
+  return res.status(400).send(errors.map((error) => error.errors.flatten().fieldErrors));
 }
 
 export const validateRequestBody: <TBody>(
   zodSchema: ZodSchema<TBody>,
-) => RequestHandler<ParamsDictionary, any, TBody, any> = schema => (req, res, next) => {
+) => RequestHandler<ParamsDictionary, any, TBody, any> = (schema) => (req, res, next) => {
   const parsed = schema.safeParse(req.body);
   if (parsed.success) {
     return next();
@@ -20,7 +20,7 @@ export const validateRequestBody: <TBody>(
 };
 
 export const validateRequestParams: <TParams>(zodSchema: ZodSchema<TParams>) => RequestHandler<TParams, any, any, any> =
-  schema => (req, res, next) => {
+  (schema) => (req, res, next) => {
     const parsed = schema.safeParse(req.params);
     if (parsed.success) {
       return next();
@@ -31,7 +31,7 @@ export const validateRequestParams: <TParams>(zodSchema: ZodSchema<TParams>) => 
 
 export const validateRequestQuery: <TQuery>(
   zodSchema: ZodSchema<TQuery>,
-) => RequestHandler<ParamsDictionary, any, any, TQuery> = schema => (req, res, next) => {
+) => RequestHandler<ParamsDictionary, any, any, TQuery> = (schema) => (req, res, next) => {
   const parsed = schema.safeParse(req.query);
   if (parsed.success) {
     return next();
