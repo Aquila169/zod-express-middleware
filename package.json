@@ -10,7 +10,7 @@
     "url": "https://github.com/Aquila169/zod-express-middleware"
   },
   "scripts": {
-    "test": "jest",
+    "test": "jest ./src",
     "lint": "eslint . --ext .ts,.tsx",
     "format": "prettier --write .",
     "build": "tsc",
