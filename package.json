@@ -20,7 +20,8 @@
     "express",
     "zod",
     "middleware",
-    "endpoint"
+    "endpoint",
+    "validation"
   ],
   "author": "Casper Schouls",
   "license": "MIT",
