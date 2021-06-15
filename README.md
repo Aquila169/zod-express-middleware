@@ -111,3 +111,26 @@ app.get("/", validateRequestBody(
   }
 );
 ```
+
+### sendError and sendErrors
+These two functions can be used to send errors using an Express `Response` to the caller of an endpoint in the same format as the `validateRequest` functions. The function accepts two parameters: an `ErrorListItem` and an Express `Response`. The `ErrorListItem` has type `{ type: 'Body' | 'Query' | 'Params', errors: ZodError }`.
+
+The example below uses `sendError` to emulate the functionality of `validateRequestBody`.
+The `sendErrors` function does the same but accepts an array of `ErrorListItem` objects.
+
+**Example:**
+```typescript
+import { sendError } from 'zod-express-middleware';
+import { z } from 'zod';
+
+// app is an express app
+app.get("/", (req, res) => {
+    const zodSchema = z.object({bodyKey: z.number()});
+    const result = zodSchema.safeParse(req.body);
+    if(!result.success) {
+      return sendError({type: 'Body', errors: result.error}, res);
+    }
+    return res.json({ message: "Validation passed" });
+  }
+);
+```
