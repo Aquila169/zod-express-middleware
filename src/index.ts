@@ -1,14 +1,14 @@
-import { RequestHandler } from 'express';
+import { RequestHandler, Response } from 'express';
 import { ParamsDictionary } from 'express-serve-static-core';
 import { ZodError, ZodSchema } from 'zod';
+type ErrorListItem = { type: 'Query' | 'Params' | 'Body'; errors: ZodError<any> };
 
-type ErrorList = { type: 'Query' | 'Params' | 'Body'; errors: ZodError<any> };
-
-function sendErrors(res: any, errors: Array<ErrorList>) {
-  return res
-    .status(400)
-    .send(errors.map((error) => ({ type: error.type, errors: error.errors.flatten().fieldErrors })));
-}
+export const sendErrors: (errors: Array<ErrorListItem>, res: Response) => void = (errors, res) => {
+  return res.status(400).send(errors.map((error) => ({ type: error.type, errors: error.errors.format() })));
+};
+export const sendError: (error: ErrorListItem, res: Response) => void = (error, res) => {
+  return res.status(400).send({ type: error.type, errors: error.errors.format() });
+};
 
 export const validateRequestBody: <TBody>(
   zodSchema: ZodSchema<TBody>,
@@ -17,7 +17,7 @@ export const validateRequestBody: <TBody>(
   if (parsed.success) {
     return next();
   } else {
-    return sendErrors(res, [{ type: 'Body', errors: parsed.error }]);
+    return sendErrors([{ type: 'Body', errors: parsed.error }], res);
   }
 };
 
@@ -27,7 +27,7 @@ export const validateRequestParams: <TParams>(zodSchema: ZodSchema<TParams>) => 
     if (parsed.success) {
       return next();
     } else {
-      return sendErrors(res, [{ type: 'Params', errors: parsed.error }]);
+      return sendErrors([{ type: 'Params', errors: parsed.error }], res);
     }
   };
 
@@ -38,7 +38,7 @@ export const validateRequestQuery: <TQuery>(
   if (parsed.success) {
     return next();
   } else {
-    return sendErrors(res, [{ type: 'Query', errors: parsed.error }]);
+    return sendErrors([{ type: 'Query', errors: parsed.error }], res);
   }
 };
 
@@ -51,7 +51,7 @@ export const validateRequest: <TParams = any, TQuery = any, TBody = any>(
 ) => RequestHandler<TParams, any, TBody, TQuery> =
   ({ params, query, body }) =>
   (req, res, next) => {
-    const errors: Array<ErrorList> = [];
+    const errors: Array<ErrorListItem> = [];
     if (params) {
       const parsed = params.safeParse(req.params);
       if (!parsed.success) {
@@ -71,7 +71,7 @@ export const validateRequest: <TParams = any, TQuery = any, TBody = any>(
       }
     }
     if (errors.length > 0) {
-      return sendErrors(res, errors);
+      return sendErrors(errors, res);
     }
     return next();
   };
