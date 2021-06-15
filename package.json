@@ -1,6 +1,6 @@
 {
   "name": "zod-express-middleware",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "description": "Express middleware to validate requests using zod schema's.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
