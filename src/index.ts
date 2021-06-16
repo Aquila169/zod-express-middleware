@@ -4,10 +4,10 @@ import { ZodError, ZodSchema } from 'zod';
 type ErrorListItem = { type: 'Query' | 'Params' | 'Body'; errors: ZodError<any> };
 
 export const sendErrors: (errors: Array<ErrorListItem>, res: Response) => void = (errors, res) => {
-  return res.status(400).send(errors.map((error) => ({ type: error.type, errors: error.errors.format() })));
+  return res.status(400).send(errors.map((error) => ({ type: error.type, errors: error.errors })));
 };
 export const sendError: (error: ErrorListItem, res: Response) => void = (error, res) => {
-  return res.status(400).send({ type: error.type, errors: error.errors.format() });
+  return res.status(400).send({ type: error.type, errors: error.errors });
 };
 
 export const validateRequestBody: <TBody>(
