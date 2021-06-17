@@ -1,6 +1,13 @@
 import { RequestHandler, Response } from 'express';
 import { ParamsDictionary } from 'express-serve-static-core';
 import { ZodError, ZodSchema } from 'zod';
+
+type NonReadOnly<T> = { -readonly [P in keyof T]: NonReadOnly<T[P]> };
+
+export function stripReadOnly<T>(readOnlyItem: T): NonReadOnly<T> {
+  return readOnlyItem as NonReadOnly<T>;
+}
+
 type ErrorListItem = { type: 'Query' | 'Params' | 'Body'; errors: ZodError<any> };
 
 export const sendErrors: (errors: Array<ErrorListItem>, res: Response) => void = (errors, res) => {
