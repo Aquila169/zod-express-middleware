@@ -15,7 +15,7 @@ This package relies on [zod](https://www.npmjs.com/package/zod), [express](https
 `npm install zod-express-middleware`
 
 ## Usage
-This package provides the `validateRequest` function, which can be used to validate the `.body`, `.query` and `.params` properties of an Express `Request`. Separate functions for each of these are also provided (`validateRequestBody`, `validateRequestQuery` and `validateRequestParams`).
+This package provides the `validateRequest` function, which can be used to validate the `.body`, `.query` and `.params` properties of an Express `Request`. Separate functions for each of these are also provided (`validateRequestBody`, `validateRequestQuery` and `validateRequestParams`). 
 
 **Basic example:**
 ```typescript
@@ -72,6 +72,42 @@ app.listen(PORT, () => {
   console.log(`Server running `);
 });
 ```
+The `validate*` functions do not modify the query, params or body of the Request object, they only check whether they are valid according to the provided schema's. If you want to use the result of the schema validation (for example, if you want to strip unknown keys), you can use the `process*` equivalents (ie. `processRequest` or `processRequestBody`). These functions also accept a `ZodEffects` object, which means you can use zod's built-in `.transform` method:
+
+**Zod transformation example:**
+```typescript
+import { processRequest } from 'zod-express-middleware';
+import { z } from 'zod';
+
+export const zodEffects = z
+  .object({ jsonString: z.string() })
+  .refine(
+    incomingData => {
+      try {
+        return JSON.parse(incomingData.jsonString);
+      } catch (error) {
+        return false;
+      }
+    },
+    {
+      message: '.jsonString should be a valid JSON string.',
+    },
+  )
+  .transform(incomingData => {
+    return z.object( { bodyKey: z.number() } ).parse(JSON.parse(incomingData.afhandelingsData));
+  });
+
+// app is an express app
+app.get("/", processRequest({
+    body: zodEffects
+  }), (req, res) => {
+    // req.body is now strictly-typed and confirms to the zod schema above ( in the .transform method ).
+    // req.body has type { bodyKey: number };
+    return res.json({message: "Validation for body passed"});  
+  }
+);
+```
+
 ### validateRequest
 
 This functions accepts an object containing three optional properties:
@@ -89,11 +125,6 @@ If validation passes, `next` will be called and your request body, query and par
 
 If validation fails, a [HTTP 400](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400) response with a list of validation errors will be send to the caller. The `next` function will not be called and the request will stop being processed further.
 
-This is the main function. It receives an object with the Zod schemas for what you want to validate,
-together with the middleware you want to guard. If validation passes, your middleware will be called
-with type-safe `req` properties. If validation fails, `next` will be called containg and instance of
-`ZodError`
-
 ### validateRequestBody, validateRequestQuery and validateRequestParams
 
 These three functions work exactly the same as `validateRequest`, except they only validate a single property within the Express `Request`.
@@ -106,6 +137,45 @@ import { z } from 'zod';
 
 // app is an express app
 app.get("/", validateRequestBody(
+    z.object({
+      bodyKey: z.number(),
+    })
+  ), (req, res) => {
+    // req.body is now strictly-typed and confirms to the zod schema above.
+    // req.body: { bodyKey: number };
+    return res.json({ message: "Validation for body passed" });
+  }
+);
+```
+### processRequest
+
+This functions accepts an object containing three optional properties:
+```typescript
+schemas: {
+  params? : ZodSchema,
+  query? : ZodSchema,
+  body? : ZodSchema
+}
+```
+ 
+Each is a `ZodSchema` or a `ZodEffects` object, from the zod library. The `processRequest` function checks whether each of these is present and if so, it will use it process the corresponding property on the Express `Request` object. 
+
+If validation passes, `next` will be called and your request body, query and params properties will be type-safe within the endpoint. The body, query and params object will contain the result of the (succesful) parsing by zod. 
+
+If validation fails, a [HTTP 400](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400) response with a list of validation errors will be send to the caller. The `next` function will not be called and the request will stop being processed further.
+
+### processRequestBody, processRequestQuery and processRequestParams
+
+These three functions work exactly the same as `processRequest`, except they only process a single property within the Express `Request`.
+The other, non-processed properties will have type `any`, as if they were not modified at all. Only an example is provided for `processRequestBody`, but `processRequestQuery` and `processRequestParams` work in the same manner.
+
+**Example:**
+```typescript
+import { processRequestBody } from 'zod-express-middleware';
+import { z } from 'zod';
+
+// app is an express app
+app.get("/", processRequestBody(
     z.object({
       bodyKey: z.number(),
     })
