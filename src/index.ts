@@ -1,12 +1,38 @@
-import { RequestHandler, Response } from 'express';
+import { Request, RequestHandler, Response } from 'express';
 import { ParamsDictionary } from 'express-serve-static-core';
-import { ZodEffects, ZodError, ZodSchema } from 'zod';
+import { z, ZodEffects, ZodError, ZodSchema, ZodType, ZodTypeDef } from 'zod';
 
 type NonReadOnly<T> = { -readonly [P in keyof T]: NonReadOnly<T[P]> };
 
 export function stripReadOnly<T>(readOnlyItem: T): NonReadOnly<T> {
   return readOnlyItem as NonReadOnly<T>;
 }
+
+export declare type TypedRequest<
+  TParams extends ZodType<any, ZodTypeDef, any>,
+  TQuery extends ZodType<any, ZodTypeDef, any>,
+  TBody extends ZodType<any, ZodTypeDef, any>,
+> = Request<z.infer<TParams>, any, z.infer<TBody>, z.infer<TQuery>>;
+
+export declare type TypedRequestBody<TBody extends ZodType<any, ZodTypeDef, any>> = Request<
+  ParamsDictionary,
+  any,
+  z.infer<TBody>,
+  any
+>;
+
+export declare type TypedRequestParams<TParams extends ZodType<any, ZodTypeDef, any>> = Request<
+  z.infer<TParams>,
+  any,
+  any,
+  any
+>;
+export declare type TypedRequestQuery<TQuery extends ZodType<any, ZodTypeDef, any>> = Request<
+  ParamsDictionary,
+  any,
+  any,
+  z.infer<TQuery>
+>;
 
 type ErrorListItem = { type: 'Query' | 'Params' | 'Body'; errors: ZodError<any> };
 
