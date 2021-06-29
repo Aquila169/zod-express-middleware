@@ -209,3 +209,22 @@ app.get("/", (req, res) => {
   }
 );
 ```
+
+### TypedRequest
+Besides exporting the above middleware functions, zod-express-middleware also provided several typings for usage with Express requests. Typescript is able to automatically infer the types of your request body, query and params if your endpoint definition is placed in the same file as the validation middleware, as shown above. However, if the code for your endpoint is in a separate file, typings will not be automatically available. This is where the `TypedRequest`, `TypedRequestBody` etc. types come in: the `typeof` a `ZodSchema` can be passed into the `TypedRequest`, providing your function with typings. An example:
+
+```typescript
+import { Response } from 'express';
+import { TypedRequestBody } from 'zod-express-middleware';
+
+// bodySchema is a ZodSchema, imported from another file.
+import { bodySchema } from '../validation/requestSchemas';
+
+// This is the endpoint code: it is not placed in the same file as the route definition and the validation middleware.
+export async function endpointCode(req: TypedRequestBody<typeof bodySchema>, res: Response) {
+  // req.body is now typed: use TypedRequestParams, TypedRequestQuery for params and query, or TypedRequest for multiple together.
+  const typedBody = req.body;
+  return res.json(typedBody);
+}
+
+```
