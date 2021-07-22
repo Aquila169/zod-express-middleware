@@ -8,6 +8,17 @@ export function stripReadOnly<T>(readOnlyItem: T): NonReadOnly<T> {
   return readOnlyItem as NonReadOnly<T>;
 }
 
+export declare type RequestValidation<TParams, TQuery, TBody> = {
+  params?: ZodSchema<TParams>;
+  query?: ZodSchema<TQuery>;
+  body?: ZodSchema<TBody>;
+};
+export declare type RequestProcessing<TParams, TQuery, TBody> = {
+  params?: ZodEffects<any, TParams>;
+  query?: ZodEffects<any, TQuery>;
+  body?: ZodEffects<any, TBody>;
+};
+
 export declare type TypedRequest<
   TParams extends ZodType<any, ZodTypeDef, any>,
   TQuery extends ZodType<any, ZodTypeDef, any>,
@@ -100,31 +111,13 @@ export function processRequestQuery<TQuery>(
 }
 
 export function processRequest<TParams = any, TQuery = any, TBody = any>(
-  schemas: Partial<{
-    params: ZodEffects<any, TParams>;
-    query: ZodEffects<any, TQuery>;
-    body: ZodEffects<any, TBody>;
-  }>,
+  schemas: RequestProcessing<TParams, TQuery, TBody>,
 ): RequestHandler<TParams, any, TBody, TQuery>;
 export function processRequest<TParams = any, TQuery = any, TBody = any>(
-  schemas: Partial<{
-    params: ZodSchema<TParams>;
-    query: ZodSchema<TQuery>;
-    body: ZodSchema<TBody>;
-  }>,
+  schemas: RequestValidation<TParams, TQuery, TBody>,
 ): RequestHandler<TParams, any, TBody, TQuery>;
 export function processRequest<TParams = any, TQuery = any, TBody = any>(
-  schemas:
-    | Partial<{
-        params: ZodSchema<TParams>;
-        query: ZodSchema<TQuery>;
-        body: ZodSchema<TBody>;
-      }>
-    | Partial<{
-        params: ZodEffects<any, TParams>;
-        query: ZodEffects<any, TQuery>;
-        body: ZodEffects<any, TBody>;
-      }>,
+  schemas: RequestValidation<TParams, TQuery, TBody> | RequestProcessing<TParams, TQuery, TBody>,
 ): RequestHandler<TParams, any, TBody, TQuery> {
   return (req, res, next) => {
     const errors: Array<ErrorListItem> = [];
@@ -192,11 +185,7 @@ export const validateRequestQuery: <TQuery>(
 };
 
 export const validateRequest: <TParams = any, TQuery = any, TBody = any>(
-  schemas: Partial<{
-    params: ZodSchema<TParams>;
-    query: ZodSchema<TQuery>;
-    body: ZodSchema<TBody>;
-  }>,
+  schemas: RequestValidation<TParams, TQuery, TBody>,
 ) => RequestHandler<TParams, any, TBody, TQuery> =
   ({ params, query, body }) =>
   (req, res, next) => {
