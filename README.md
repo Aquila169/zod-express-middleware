@@ -6,6 +6,11 @@ Middleware for [express](https://www.npmjs.com/package/express) that uses [zod](
 <a href="https://github.com/Aquila169/zod-express-middleware/actions/workflows/node.js.yml" rel="nofollow"><img alt="npm" src="https://github.com/Aquila169/zod-express-middleware/actions/workflows/node.js.yml/badge.svg"></a>
 <a href="https://opensource.org/licenses/MIT" rel="nofollow"><img src="https://img.shields.io/npm/l/zod-express-middleware" alt="License"></a>
 
+## ⚠️ Project status ⚠️
+This project hasn't received any updates since _June 17, 2021_ and is not likely to receive significant updates in the future. `zod-express-middleware` will work as normal and remains a simple, unopiniated package to add `zod` validation to your `express` endpoints without requiring a restructure of your application.
+
+However, you might be better off using [express-zod-api](https://github.com/RobinTail/express-zod-api) or [express-zod-safe](https://github.com/AngaBlue/express-zod-safe).
+
 ## Installation
 
 This package relies on [zod](https://www.npmjs.com/package/zod), [express](https://www.npmjs.com/package/express) and [@types/express](https://www.npmjs.com/package/@types/express). These have been added as peer dependencies so they can be upgraded independently of this package.
